@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#07583f">
+<title>دفتري - دفتر الديون</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f5ef;color:#18382c}header{background:#07583f;color:white;padding:25px 18px;border-radius:0 0 24px 24px}h1{color:#f2d28a;margin:0}.wrap{padding:16px;max-width:600px;margin:auto}.card{background:white;padding:16px;border-radius:16px;margin-bottom:14px;box-shadow:0 2px 9px #0001}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.num{font-size:22px;color:#087449;font-weight:bold}label{display:block;margin:12px 0 6px}input,button{width:100%;padding:12px;border-radius:10px;font:inherit}input{border:1px solid #ccd7d0}button{border:0;background:#087449;color:white;margin-top:10px}small{color:#b48b35}.person{border-bottom:1px solid #eee;padding:12px 0}.actions{display:flex;gap:8px}.actions button{font-size:13px}.danger{background:#a83b32}.empty{text-align:center;color:#758078;padding:18px}
+</style>
+</head>
+<body>
+<header><h1>☪ دَفْتَري</h1><p>بسم الله — دفتر ديون المحلات</p><small>الأمانة أساس التعامل</small></header>
+<main class="wrap">
+<div class="stats">
+<section class="card">الديون المتبقية<div class="num" id="total">0</div><small>دينار عراقي</small></section>
+<section class="card">المبالغ المستلمة<div class="num" id="paid">0</div><small>دينار عراقي</small></section>
+</div>
+<section class="card"><h3>＋ تسجيل دين جديد</h3>
+<label for="name">اسم الزبون</label><input id="name" placeholder="اسم الزبون">
+<label for="phone">رقم الهاتف (اختياري)</label><input id="phone" placeholder="07xxxxxxxxx" type="tel">
+<label for="amount">مبلغ الدين بالدينار</label><input id="amount" type="number" min="1" placeholder="مثلاً 25000">
+<label for="note">تفاصيل الدين</label><input id="note" placeholder="مثلاً مواد غذائية">
+<button id="add">حفظ الدين</button></section>
+<section class="card"><h3>📒 سجل الزبائن</h3><input id="search" placeholder="ابحث عن زبون"><div id="list" class="empty">لا توجد ديون مسجلة بعد</div></section>
+<p style="text-align:center;font-size:12px">نسخة أولية تحفظ بياناتها في هذا المتصفح على هذا الجهاز. لا تعتمد عليها وحدها لحفظ السجلات المهمة.</p>
+</main>
+<script>
+const key='daftari_records_v1';let records=[];try{records=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}
+const $=id=>document.getElementById(id);const money=n=>Number(n).toLocaleString('en-US');
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function save(){localStorage.setItem(key,JSON.stringify(records));render()}
+function render(){$('total').textContent=money(records.reduce((s,r)=>s+r.amount-r.paid,0));$('paid').textContent=money(records.reduce((s,r)=>s+r.paid,0));let q=$('search').value.trim().toLowerCase();let a=records.filter(r=>r.name.toLowerCase().includes(q)||r.phone.includes(q));$('list').className=a.length?'':'empty';$('list').innerHTML=a.length?a.map(r=>'<div class="person"><b>'+esc(r.name)+'</b><br>'+esc(r.phone||'لا يوجد رقم')+'<p>الدين: '+money(r.amount)+' د.ع<br>المدفوع: '+money(r.paid)+' د.ع<br><b>المتبقي: '+money(r.amount-r.paid)+' د.ع</b></p><div class="actions"><button onclick="receive('+r.id+')">تسجيل دفعة</button><button class="danger" onclick="removeRecord('+r.id+')">حذف</button></div></div>').join(''):'لا توجد نتائج'}
+}
+$('add').onclick=()=>{let name=$('name').value.trim(),amount=Number($('amount').value);if(!name||!Number.isFinite(amount)||amount<=0){alert('اكتب اسم الزبون ومبلغاً صحيحاً');return}records.unshift({id:Date.now(),name,phone:$('phone').value.trim(),amount,paid:0,note:$('note').value.trim()});['name','phone','amount','note'].forEach(id=>$(id).value='');save();alert('تم حفظ الدين على هذا الجهاز')};
+window.receive=id=>{let r=records.find(x=>x.id===id);if(!r)return;let n=Number(prompt('كم المبلغ المستلم بالدينار؟'));if(!Number.isFinite(n)||n<=0)return;if(n>r.amount-r.paid){alert('المبلغ أكبر من الدين المتبقي');return}r.paid+=n;save()};
+window.removeRecord=id=>{if(confirm('هل تريد حذف هذا السجل؟')){records=records.filter(r=>r.id!==id);save()}};
+$('search').oninput=render;render();
+</script>
+</body></html>
