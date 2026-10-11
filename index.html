@@ -2,39 +2,67 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#07583f">
-<title>دفتري - دفتر الديون</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a5c36">
+<title>دفتري - الأمانة أساس التعامل</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f5ef;color:#18382c}header{background:#07583f;color:white;padding:25px 18px;border-radius:0 0 24px 24px}h1{color:#f2d28a;margin:0}.wrap{padding:16px;max-width:600px;margin:auto}.card{background:white;padding:16px;border-radius:16px;margin-bottom:14px;box-shadow:0 2px 9px #0001}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.num{font-size:22px;color:#087449;font-weight:bold}label{display:block;margin:12px 0 6px}input,button{width:100%;padding:12px;border-radius:10px;font:inherit}input{border:1px solid #ccd7d0}button{border:0;background:#087449;color:white;margin-top:10px}small{color:#b48b35}.person{border-bottom:1px solid #eee;padding:12px 0}.actions{display:flex;gap:8px}.actions button{font-size:13px}.danger{background:#a83b32}.empty{text-align:center;color:#758078;padding:18px}
+:root{--green:#0a5c36;--gold:#d4af37;--bg:#fdfbf4}
+*{box-sizing:border-box;font-family:'Tajawal',sans-serif}
+body{margin:0;background:var(--bg)}
+header{background:linear-gradient(135deg,#0a5c36,#0e7a49);color:#fff;padding:26px 18px 34px;text-align:center}
+header h1{margin:0;font-family:'Amiri',serif;font-size:28px}
+.islamic-border{height:10px;background:repeating-linear-gradient(45deg,#d4af37,#d4af37 10px,#fff 10px,#fff 20px)}
+.wrap{max-width:560px;margin:-16px auto 0;padding:0 14px 100px}
+.card{background:#fff;border-radius:20px;padding:16px;box-shadow:0 8px 24px rgba(10,92,54,.08);margin-bottom:12px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat small{color:#888}.stat b{font-size:20px;display:block}
+.stat.total{grid-column:1/-1;background:#fffbe6;border:1px solid #f5e6a3}
+select,input{width:100%;padding:13px;border:1.5px solid #e5e5e5;border-radius:12px;font-size:15px}
+.btn{border:none;border-radius:12px;padding:13px;font-weight:700;cursor:pointer}
+.btn-green{background:#0a5c36;color:#fff;width:100%}.btn-light{background:#f1f8f5;color:#0a5c36;border:1px solid #c8e6d5}
+.row{display:flex;gap:8px;margin-top:8px}
+.item{background:#fff;border-radius:16px;padding:12px 14px;display:flex;justify-content:space-between;margin-bottom:8px;border:1px solid #f0f0f0}
+.badge{padding:3px 8px;border-radius:20px;font-size:11px}.debt{background:#ffebee;color:#c62828}.pay{background:#e8f5e9;color:#2e7d32}
+.hijri{font-family:'Amiri',serif;color:#d4af37;text-align:center;margin:8px 0}
 </style>
 </head>
 <body>
-<header><h1>☪ دَفْتَري</h1><p>بسم الله — دفتر ديون المحلات</p><small>الأمانة أساس التعامل</small></header>
+<header><h1>دِفْتَري ﴿ وَأَوْفُوا الْكَيْلَ ﴾</h1><p>دفتر ديون المحلات - للأمة العربية</p></header>
+<div class="islamic-border"></div>
 <main class="wrap">
+<div class="hijri" id="hijri"></div>
 <div class="stats">
-<section class="card">الديون المتبقية<div class="num" id="total">0</div><small>دينار عراقي</small></section>
-<section class="card">المبالغ المستلمة<div class="num" id="paid">0</div><small>دينار عراقي</small></section>
+<div class="card stat"><small>الديون</small><b id="tDebt">0</b></div>
+<div class="card stat"><small>المدفوعات</small><b id="tPay">0</b></div>
+<div class="card stat total"><small>المتبقي عند الزبائن</small><b id="tRemain">0</b></div>
 </div>
-<section class="card"><h3>＋ تسجيل دين جديد</h3>
-<label for="name">اسم الزبون</label><input id="name" placeholder="اسم الزبون">
-<label for="phone">رقم الهاتف (اختياري)</label><input id="phone" placeholder="07xxxxxxxxx" type="tel">
-<label for="amount">مبلغ الدين بالدينار</label><input id="amount" type="number" min="1" placeholder="مثلاً 25000">
-<label for="note">تفاصيل الدين</label><input id="note" placeholder="مثلاً مواد غذائية">
-<button id="add">حفظ الدين</button></section>
-<section class="card"><h3>📒 سجل الزبائن</h3><input id="search" placeholder="ابحث عن زبون"><div id="list" class="empty">لا توجد ديون مسجلة بعد</div></section>
-<p style="text-align:center;font-size:12px">نسخة أولية تحفظ بياناتها في هذا المتصفح على هذا الجهاز. لا تعتمد عليها وحدها لحفظ السجلات المهمة.</p>
+<div class="card">
+<select id="currency" onchange="changeCur()">
+<option value="IQD|د.ع">🇮🇶 دينار عراقي</option>
+<option value="SAR|ر.س">🇸🇦 ريال سعودي</option>
+<option value="EGP|ج.م">🇪🇬 جنيه مصري</option>
+<option value="JOD|د.أ">🇯🇴 دينار أردني</option>
+<option value="AED|د.إ">🇦🇪 درهم إماراتي</option>
+<option value="KWD|د.ك">🇰🇼 دينار كويتي</option>
+<option value="USD|$">🇺🇸 دولار</option>
+</select>
+<input id="cname" placeholder="اسم الزبون" style="margin-top:8px">
+<input id="camount" type="number" placeholder="المبلغ" style="margin-top:8px">
+<div class="row"><button class="btn btn-green" onclick="addTx('debt')">+ دين</button><button class="btn btn-light" onclick="addTx('pay')">- دفعة</button></div>
+<input id="search" placeholder="🔍 بحث" oninput="render()" style="margin-top:8px">
+</div>
+<div id="list"></div>
 </main>
 <script>
-const key='daftari_records_v1';let records=[];try{records=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){}
-const $=id=>document.getElementById(id);const money=n=>Number(n).toLocaleString('en-US');
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function save(){localStorage.setItem(key,JSON.stringify(records));render()}
-function render(){$('total').textContent=money(records.reduce((s,r)=>s+r.amount-r.paid,0));$('paid').textContent=money(records.reduce((s,r)=>s+r.paid,0));let q=$('search').value.trim().toLowerCase();let a=records.filter(r=>r.name.toLowerCase().includes(q)||r.phone.includes(q));$('list').className=a.length?'':'empty';$('list').innerHTML=a.length?a.map(r=>'<div class="person"><b>'+esc(r.name)+'</b><br>'+esc(r.phone||'لا يوجد رقم')+'<p>الدين: '+money(r.amount)+' د.ع<br>المدفوع: '+money(r.paid)+' د.ع<br><b>المتبقي: '+money(r.amount-r.paid)+' د.ع</b></p><div class="actions"><button onclick="receive('+r.id+')">تسجيل دفعة</button><button class="danger" onclick="removeRecord('+r.id+')">حذف</button></div></div>').join(''):'لا توجد نتائج'}
-}
-$('add').onclick=()=>{let name=$('name').value.trim(),amount=Number($('amount').value);if(!name||!Number.isFinite(amount)||amount<=0){alert('اكتب اسم الزبون ومبلغاً صحيحاً');return}records.unshift({id:Date.now(),name,phone:$('phone').value.trim(),amount,paid:0,note:$('note').value.trim()});['name','phone','amount','note'].forEach(id=>$(id).value='');save();alert('تم حفظ الدين على هذا الجهاز')};
-window.receive=id=>{let r=records.find(x=>x.id===id);if(!r)return;let n=Number(prompt('كم المبلغ المستلم بالدينار؟'));if(!Number.isFinite(n)||n<=0)return;if(n>r.amount-r.paid){alert('المبلغ أكبر من الدين المتبقي');return}r.paid+=n;save()};
-window.removeRecord=id=>{if(confirm('هل تريد حذف هذا السجل؟')){records=records.filter(r=>r.id!==id);save()}};
-$('search').oninput=render;render();
+let cur=JSON.parse(localStorage.getItem('daftari_cur')||'["IQD","د.ع"]');
+document.getElementById('currency').value=cur.join('|');
+let data=JSON.parse(localStorage.getItem('daftari_v3')||'[]');
+function changeCur(){let v=document.getElementById('currency').value.split('|');localStorage.setItem('daftari_cur',JSON.stringify(v));cur=v;render()}
+function save(){localStorage.setItem('daftari_v3',JSON.stringify(data));render()}
+function addTx(t){let n=cname.value.trim(),a=parseFloat(camount.value);if(!n||!a)return alert('اكتب الاسم والمبلغ');data.unshift({id:Date.now(),name:n,amount:a,type:t});cname.value='';camount.value='';save()}
+function render(){let q=search.value.toLowerCase();let debt=data.filter(x=>x.type=='debt').reduce((s,x)=>s+x.amount,0);let pay=data.filter(x=>x.type=='pay').reduce((s,x)=>s+x.amount,0);let sym=cur[1];tDebt.textContent=debt.toLocaleString()+' '+sym;tPay.textContent=pay.toLocaleString()+' '+sym;tRemain.textContent=(debt-pay).toLocaleString()+' '+sym;let g={};data.filter(x=>!q||x.name.toLowerCase().includes(q)).forEach(x=>{if(!g[x.name])g[x.name]={d:0,p:0};if(x.type=='debt')g[x.name].d+=x.amount;else g[x.name].p+=x.amount});list.innerHTML='';Object.keys(g).forEach(k=>{let r=g[k].d-g[k].p;list.innerHTML+=`<div class="item"><div><b>${k}</b><br><small>عليه ${g[k].d} - دفع ${g[k].p}</small></div><div><b style="color:${r>0?'#c62828':'#2e7d32'}">${r} ${sym}</b><br><span class="badge ${r>0?'debt':'pay'}">${r>0?'عليه':'خالص'}</span></div></div>`})}
+try{let h=new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura',{day:'numeric',month:'long',year:'numeric'}).format(new Date());hijri.textContent='اليوم: '+h+' هـ'}catch(e){hijri.textContent=new Date().toLocaleDateString('ar-EG')}render();
 </script>
-</body></html>
+</body>
+</html>
